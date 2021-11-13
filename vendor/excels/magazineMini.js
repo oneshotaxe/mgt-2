@@ -25,7 +25,45 @@ export default async function (magazine) {
 
   render(new Cursor(ws), magazine.pages)
 
+  renderOverwork(new Cursor(wb.addWorksheet('List')), magazine.pages)
+
   return await wb.xlsx.writeBuffer()
+}
+
+function renderOverwork(cursor, pages) {
+  cursor.setColumnWidth([10, 15, 33, 10, 10, 10, 15, 15]);
+  cursor.getArea(1, 1, 200, 8).forEach(cell => {
+    cell.font = {
+      size: 16,
+      bold: true
+    }
+  })
+
+  cursor.getCell(1, 1).value = "Автобус";
+  cursor.getCell(1, 2).value = "№ водителя";
+  cursor.getCell(1, 3).value = "Ф.И.О.";
+  cursor.getCell(1, 4).value = "Сейчас";
+  cursor.getCell(1, 5).value = "Нужно";
+  cursor.getCell(1, 7).value = "Факт";
+  cursor.getCell(1, 8).value = "Переработка";
+
+  let row = 2;
+  for (const page of pages) {
+    for (const bus of page.buses) {
+      for (const driver of bus.drivers) {
+        if (driver.rates.isCritic) {
+          cursor.getCell(row, 1).value = bus.num;
+          cursor.getCell(row, 2).value = driver.num;
+          cursor.getCell(row, 3).value = driver.name;
+          cursor.getCell(row, 4).value = driver.rates.currRate;
+          cursor.getCell(row, 5).value = driver.rates.needRate;
+          cursor.getCell(row, 7).value = Math.ceil(driver.rates.currTotal);
+          cursor.getCell(row, 8).value = Math.ceil(driver.rates.over);
+          row++;
+        }
+      }
+    }
+  }
 }
 
 function render(cursor, pages) {
@@ -191,9 +229,10 @@ function fillBusInfo(cursor, bus) {
 
 function fillDriverInfo(cursor, driver) {
   cursor.getCell(1, 1).value = driver.name
-  cursor.getCell(1, 2).value = driver.num.slice(3)
+  cursor.getCell(1, 2).value = driver.num.slice(0, 4)
+  cursor.getCell(2, 2).value = driver.num.slice(4)
   const graphicRow = driver.graphic && '' + driver.graphic.name
-  cursor.getCell(2, 1).value = graphicRow && `(ЛВ${graphicRow}) ${graphicRow.slice(0,1)} раб. - ${graphicRow.slice(1,2)} вых.`
+  cursor.getCell(2, 1).value = graphicRow && `(ЛВ${graphicRow}) ${graphicRow.slice(0, 1)} раб. - ${graphicRow.slice(1, 2)} вых.`
 
   for (let i = 0; i < driver.statuses.length; i++) {
     cursor.getCell(1, 4 + i).value = driver.statuses[i].value
@@ -206,11 +245,20 @@ function fillWayInfo(cursor, way) {
   if (way.times) {
     cursor.getCell(3, 2).value = way.times.durationFirstSmene
     cursor.getCell(3, 4).value = way.times.durationSecondSmene
+    if (!way.times.durationSecondSmene) {
+      cursor.getCell(3, 3).value = '';
+    }
     cursor.getCell(4, 4).value = way.times.outPark
     cursor.getCell(5, 4).value = way.times.change
+    if (!way.times.change) {
+      cursor.getCell(5, 3).value = '';
+    }
     cursor.getCell(6, 4).value = way.times.endWork
     cursor.getCell(8, 2).value = way.times.lunchFirstSmene
     cursor.getCell(8, 4).value = way.times.lunchSecondSmene
+    if (!way.times.lunchSecondSmene) {
+      cursor.getCell(8, 3).value = '';
+    }
   }
 }
 
