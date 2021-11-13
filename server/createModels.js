@@ -8,6 +8,7 @@ module.exports = function (conn) {
     name: Types.String,
     bus: { type: Types.ObjectId, ref: 'bus' },
     phones: [Types.String],
+    firstDayRest: Types.Boolean,
     graphic: {
       type: {
         name: Types.String,

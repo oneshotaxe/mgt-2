@@ -5,6 +5,7 @@
         v-text-field(label="Номер" v-model="model.num")
         v-text-field(label="Ф.И.О." v-model="model.name")
         v-autocomplete(label="Автобус" v-model="model.bus" :items="buses")
+        v-checkbox(label="Отдых первый день" v-model="model.firstDayRest")
       v-col
         graphic-form(v-model="model.graphic")
 </template>

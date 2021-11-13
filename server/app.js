@@ -132,11 +132,86 @@ app.post('/magazine', async (req, res) => {
     drivers: bus.drivers.map(driver => ({
       num: driver.num,
       name: driver.shortName,
+      firstDayRest: driver.firstDayRest,
       fullname: driver.name,
       graphic: driver.graphic,
       statuses: statusesByDate(driver.graphic, req.body.month + '-01', daysInMonth)
     }))
   }))
+
+  const norm = +req.body.norm || 0;
+  for (const bus of buses) {
+    for (const driver of bus.drivers) {
+      try {
+        if (driver.graphic.name[1] === '2') {
+          let statuses = driver.statuses;
+          if (driver.firstDayRest) {
+            statuses.reverse();
+          }
+  
+          for (let i = 0; i < statuses.length - 1; i++) {
+            if (statuses[i].value === 'В') {
+              if (i === 0 && statuses[i + 1].value !== 'В') {
+                statuses[i].value = 'О';
+              }
+  
+              if (statuses[i + 1].value === 'В') {
+                statuses[i + 1].value = 'О';
+              }
+            }
+          }
+
+          if (driver.firstDayRest) {
+            statuses.reverse();
+          }
+        }
+      } catch (e) { }
+
+      try {
+        const workStatuses = driver.statuses.filter(s => ['Р', '1', '2'].includes(s.value));
+        const workMinutes = workStatuses.reduce((acc, cur) => {
+          try {
+            let time;
+            switch (cur.value) {
+              case 'Р':
+                time = bus.way.times.durationFirstSmene.split(':')
+                return acc + +time[1] + +time[0] * 60;
+              case '1':
+                time = bus.way.times.durationFirstSmene.split(':')
+                return acc + +time[1] + +time[0] * 60;
+              case '2':
+                time = bus.way.times.durationSecondSmene.split(':')
+                return acc + +time[1] + +time[0] * 60;
+            }
+          } catch (e) {
+            return acc;
+          };
+          return acc;
+        }, 0);
+        const workHours = workMinutes / 60;
+
+        const needRate = [
+          Math.floor(norm / workStatuses.length),
+          Math.floor(((norm / workStatuses.length) % 1) * 60)
+        ];
+
+        const currRate = [
+          Math.floor(workHours / workStatuses.length),
+          Math.floor(((workHours / workStatuses.length) % 1) * 60)
+        ];
+
+        driver.rates = {
+          needRate: needRate.join(':'),
+          currRate: currRate.join(':'),
+          currTotal: workHours,
+          over: workHours - norm,
+          isCritic: ((norm + 11) - workHours) <= 0
+        }
+      } catch (e) {
+        continue;
+      }
+    }
+  }
 
   const magazine = { pages: [] }
   const busesPerPage = req.body.busesPerPage || 4
