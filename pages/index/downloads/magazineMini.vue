@@ -4,6 +4,7 @@
       v-card-title {{ title }}
       v-card-text
         v-text-field(label="Месяц" v-model="month" v-mask="'####-##'")
+        v-text-field(label="Норма, ч" v-model="norm")
       v-card-actions
         v-spacer
         v-btn(@click="fn") Скачать
@@ -21,12 +22,13 @@ export default {
     return {
       title: 'Журнал мини',
       dialog: true,
-      month: moment().format('YYYY-MM')
+      month: moment().format('YYYY-MM'),
+      norm: 0
     }
   },
   methods: {
     async fn() {
-      const { data } = await this.$axios.post('/magazine', { busesPerPage: 5, month: this.month })
+      const { data } = await this.$axios.post('/magazine', { busesPerPage: 5, month: this.month, norm: this.norm })
       const buf = await buildMagazineMini(data)
       await FileSaver.saveAs(new Blob([buf]), 'magazine mini.xlsx')
       this.$router.push(`/`)
