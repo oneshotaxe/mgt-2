@@ -84,13 +84,13 @@ function renderPage(cursor, page) {
     }
   })
 
-  renderHeader(cursor.createCursor(6, 1))
+  renderHeader(cursor.createCursor(6, 1), page.weekdays)
   for (let i = 0; i < 5; i++) {
     renderBus(cursor.createCursor(9 + i * 8, 1), page.buses[i])
   }
 }
 
-function renderHeader(cursor) {
+function renderHeader(cursor, weekdays = []) {
   cursor.setRowHeight([25, 25, 12.25])
 
   // merges
@@ -145,6 +145,18 @@ function renderHeader(cursor) {
 
   new Array(31).fill(1).map((_, i) => i + 1).forEach(i => {
     cursor.getCell(2, i + 6).value = i
+
+    if (weekdays.includes(i.toString())) {
+      cursor.createCursor(2, 6 + i)
+        .getArea(1, 1, 42, 1)
+        .forEach(cell => {
+          cell.fill = {
+            type: 'pattern',
+            pattern:'solid',
+            fgColor:{argb:'FFbfbfbf'}
+          }
+        })
+    }
   })
 
   new Array(38).fill(1).map((_, i) => i + 1).forEach(i => {
@@ -229,8 +241,7 @@ function fillBusInfo(cursor, bus) {
 
 function fillDriverInfo(cursor, driver) {
   cursor.getCell(1, 1).value = driver.name
-  cursor.getCell(1, 2).value = driver.num.slice(0, 4)
-  cursor.getCell(2, 2).value = driver.num.slice(4)
+  cursor.getCell(1, 2).value = driver.num.slice(3)
   const graphicRow = driver.graphic && '' + driver.graphic.name
   cursor.getCell(2, 1).value = graphicRow && `(ЛВ${graphicRow}) ${graphicRow.slice(0, 1)} раб. - ${graphicRow.slice(1, 2)} вых.`
 
