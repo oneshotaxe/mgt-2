@@ -241,7 +241,8 @@ function fillBusInfo(cursor, bus) {
 
 function fillDriverInfo(cursor, driver) {
   cursor.getCell(1, 1).value = driver.name
-  cursor.getCell(1, 2).value = driver.num.slice(3)
+  cursor.getCell(1, 2).value = driver.num.slice(0, 4)
+  cursor.getCell(2, 2).value = driver.num.slice(4)
   const graphicRow = driver.graphic && '' + driver.graphic.name
   cursor.getCell(2, 1).value = graphicRow && `(ЛВ${graphicRow}) ${graphicRow.slice(0, 1)} раб. - ${graphicRow.slice(1, 2)} вых.`
 

@@ -152,11 +152,11 @@ app.post('/magazine', async (req, res) => {
           for (let i = 0; i < statuses.length - 1; i++) {
             if (statuses[i].value === 'В') {
               if (i === 0 && statuses[i + 1].value !== 'В') {
-                statuses[i].value = 'О';
+                statuses[i].value = 'В'; // О
               }
   
               if (statuses[i + 1].value === 'В') {
-                statuses[i + 1].value = 'О';
+                statuses[i + 1].value = 'В'; // О
               }
             }
           }
