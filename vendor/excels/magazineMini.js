@@ -85,8 +85,20 @@ function renderPage(cursor, page) {
   const busesLength = `Автобусов: ${page.buses?.length ?? 0}.`;
   
   cursor.getCell(4, 7).value = `Количество:`;
+  cursor.getCell(4, 7).alignment = {
+    vertical: 'middle',
+    horizontal: 'left'
+  }
   cursor.getCell(3, 11).value = busesLength;
+  cursor.getCell(3, 11).alignment = {
+    vertical: 'middle',
+    horizontal: 'left'
+  }
   cursor.getCell(5, 11).value = driversLength;
+  cursor.getCell(5, 11).alignment = {
+    vertical: 'middle',
+    horizontal: 'left'
+  }
 
   cursor.setRowHeight(new Array(ROWS_PER_PAGE).fill(18.75))
 
