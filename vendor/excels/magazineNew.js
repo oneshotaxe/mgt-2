@@ -294,6 +294,8 @@ function renderRightPage(cursor, page, isEmpty = false) {
     renderRightBus(cursor.createCursor(7 + i * 8, 1), page.buses[i])
   }
   cursor.getCell(1,24).value = (page.number + 1) * 2
+  cursor.getCell(2, 1).value = `Водителей: ${page.buses?.reduce((acc, bus) => acc + bus.drivers?.length ?? 0, 0) ?? 0}`;
+  cursor.getCell(3, 1).value = `Автобусов: ${page.buses?.length ?? 0}`;
 }
 
 function renderRightHeader(cursor, weekdays = []) {
