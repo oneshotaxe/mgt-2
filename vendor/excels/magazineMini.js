@@ -75,6 +75,16 @@ function render(cursor, pages) {
 }
 
 function renderPage(cursor, page) {
+  const cell = cursor.getCell(4, 41)
+  cell.value = page.number + 1
+  cell.alignment = {
+    vertical: 'middle',
+    horizontal: 'center'
+  }
+  const driversLength = `Водителей: ${page.buses?.reduce((acc, bus) => acc + bus.drivers?.length ?? 0, 0) ?? 0}.`;
+  const busesLength = `Автобусов: ${page.buses?.length ?? 0}.`;
+  cursor.getCell(5, 4).value = ` ${busesLength} ${driversLength}`;
+
   cursor.setRowHeight(new Array(ROWS_PER_PAGE).fill(18.75))
 
   cursor.getArea(1, 1, ROWS_PER_PAGE, COLUMNS_PER_PAGE).forEach(cell => {
