@@ -81,9 +81,18 @@ function renderPage(cursor, page) {
     vertical: 'middle',
     horizontal: 'center'
   }
+
+  cursor.setRowHeight(new Array(ROWS_PER_PAGE).fill(18.75))
+
+  cursor.getArea(1, 1, ROWS_PER_PAGE, COLUMNS_PER_PAGE).forEach(cell => {
+    cell.alignment = {
+      vertical: 'middle',
+      horizontal: 'center'
+    }
+  })
+
   const driversLength = `Водителей: ${page.buses?.reduce((acc, bus) => acc + bus.drivers?.length ?? 0, 0) ?? 0}.`;
   const busesLength = `Автобусов: ${page.buses?.length ?? 0}.`;
-  
   cursor.getCell(4, 7).value = `Количество:`;
   cursor.getCell(4, 7).alignment = {
     vertical: 'middle',
@@ -99,15 +108,6 @@ function renderPage(cursor, page) {
     vertical: 'middle',
     horizontal: 'left'
   }
-
-  cursor.setRowHeight(new Array(ROWS_PER_PAGE).fill(18.75))
-
-  cursor.getArea(1, 1, ROWS_PER_PAGE, COLUMNS_PER_PAGE).forEach(cell => {
-    cell.alignment = {
-      vertical: 'middle',
-      horizontal: 'center'
-    }
-  })
 
   renderHeader(cursor.createCursor(6, 1), page.weekdays)
   for (let i = 0; i < 5; i++) {
